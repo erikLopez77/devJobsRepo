@@ -1,9 +1,15 @@
+const mongoose = require('mongoose');
+require('./config/db');
+
 const express = require('express');
 const { engine } = require('express-handlebars');
 const path = require('path');
 const router = require('./routes/index')();
+const cookieParser = require('cookie-parser');
+const session = require('express');
+const MongoStore = require('connect-mongo')(session);
 
-require('dotenv').config({ path: 'variables.env' })
+require('dotenv').config({ path: 'variables.env' });
 
 const app = express();
 
@@ -14,7 +20,15 @@ app.engine('handlebars', engine({
 app.set('view engine', 'handlebars');
 
 //static files
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
+app.use(session({
+    secret: process.env.SECRETO,
+    key: process.env.KEY,
+    resave: false,
+    saveUnitialized: false,
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
+}));
 
 app.use('/', router);
 

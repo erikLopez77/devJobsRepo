@@ -15,6 +15,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-handlebars": "^8.0.1",
+    "express-session": "^1.18.1",
     "mongose": "^0.0.2-security",
     "session": "^0.1.0",
     "shortid": "^2.2.17",
