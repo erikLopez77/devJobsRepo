@@ -7,7 +7,7 @@ const path = require('path');
 const router = require('./routes/index')();
 const cookieParser = require('cookie-parser');
 const session = require('express');
-const MongoStore = require('connect-mongo')(session);
+const MongoStore = require('connect-mongo'); //(session);
 
 require('dotenv').config({ path: 'variables.env' });
 
@@ -26,8 +26,10 @@ app.use(session({
     secret: process.env.SECRETO,
     key: process.env.KEY,
     resave: false,
-    saveUnitialized: false,
-    store: new MongoStore({ mongooseConnection: mongoose.connection })
+    saveUninitialized: false,
+    store: MongoStore.create({
+        client: mongoose.connection.getClient(),
+    })
 }));
 
 app.use('/', router);
