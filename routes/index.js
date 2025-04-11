@@ -5,7 +5,7 @@ const vacantesController = require('../controllers/vacanteController');
 module.exports = () => {
     router.get('/', homeController.mostrarTrabajos);
     //crear Vacante
-    router.get('/vacantes/nuevs',
+    router.get('/vacantes/nueva',
         vacantesController.formularioNuevaVacante
     );
     return router;
