@@ -1,5 +1,8 @@
 <main class="lista-vacantes">
     <h2> Lista de vacantes</h2>
+
+    {{#if vacantes.length}}
+    {{#each vacantes}}
     <div class="vacante">
         <div class="caja">
             <h3>Facebook</h3>
@@ -18,4 +21,7 @@
         </div>
     </div>
 
+    {{else}}
+    <p>No hay vacantes</p>
+    {{/if}}
 </main>
