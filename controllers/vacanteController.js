@@ -20,3 +20,16 @@ exports.agregarVacante = async (req, res) => {
 
     res.redirect(`/vacante/${nuevaVacante.url}`);
 }
+//muestra una vacante
+exports.mostrarVacante = async (req, res) => {
+    const vacante = await Vacante.findOne({ url: req.params });
+
+    //si no hay resultados
+    if (!vacante) return next();
+
+    return res.render('vacante', {
+        vacante,
+        nombrePagina: vacante.titulo,
+        barra: true
+    });
+}

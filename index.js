@@ -11,7 +11,7 @@ const MongoStore = require('connect-mongo'); //(session);
 const bodyParser = require('body-parser');
 
 require('dotenv').config({ path: 'variables.env' });
-S
+
 const app = express();
 
 //habilitar body parser
