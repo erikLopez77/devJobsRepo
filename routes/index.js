@@ -5,15 +5,14 @@ const vacantesController = require('../controllers/vacanteController');
 module.exports = () => {
     router.get('/', homeController.mostrarTrabajos);
     //crear Vacante
-    router.get('/vacantes/nueva',
-        vacantesController.formularioNuevaVacante
-    );
-    router.post('/vacantes/nueva',
-        vacantesController.agregarVacante
-    );
+    router.get('/vacantes/nueva', vacantesController.formularioNuevaVacante);
+    router.post('/vacantes/nueva', vacantesController.agregarVacante);
 
     //mostrar vacante singular
     router.get('/vacantes/:url', vacantesController.mostrarVacante);
+
+    //editar vacantes
+    router.get('/vacantes/editar/:url', vacantesController.formEditarVacante);
     return router;
 
 }

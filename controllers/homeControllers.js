@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const Vacante = mongoose.model('Vacante');
 
-exports.mostrarTrabajos = async (req, res) => {
-    const vacantes = await Vacante.find();
+exports.mostrarTrabajos = async (req, res, next) => {
+    //lean() convierte a objetos planos los datos de mongo
+    const vacantes = await Vacante.find().lean();
 
     if (!vacantes) {
         return next();
