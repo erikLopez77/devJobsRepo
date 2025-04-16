@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const skills = new Set();
 const agregarSkills = e => {
+    //target identifica al elemento que desencadeno el evento
     if (e.target.tagName === 'LI') {
         if (e.target.classList.contains('activo')) {
             //quitarlo del set y quitar la clase
@@ -21,7 +22,7 @@ const agregarSkills = e => {
             e.target.classList.add('activo');
         }
     }
-    const skillsArray = [...skills]
+    const skillsArray = [...skills]//skills se convierte a un array
     document.querySelector('#skills').value = skillsArray;
 }
 
@@ -31,7 +32,7 @@ const skillsSeleccionados = () => {
     seleccionados.forEach(seleccionado => {
         skills.add(seleccionado.textContent)
     })
-    //inyectamos en el hidden
-    const skillsArray = [...skills]
-    document.querySelector('#skills').value = skillsArray;
+
+    const skillsArray = [...skills]//conversion del set a un array 
+    document.querySelector('#skills').value = skillsArray;//inyectamos en el hidden
 }

@@ -9,11 +9,12 @@ module.exports = {
                 <li ${seleccionadas.includes(skill) ? 'class="activo"' : ''}>${skill}</li>
             `;
         });
-
+        //opciones.fn()(renderiza el bloque interno) se le crea una propiedad html y se le asigna lo que tenemos en let html
         return opciones.fn().html = html;
     },
     tipoContrato: (seleccionado, opciones) => {
         return opciones.fn(this).replace(
+            //si value == seleccionado entonces selected=selected
             new RegExp(`value="${seleccionado}"`), '$& selected="selected"'
         )
     }
