@@ -33,4 +33,12 @@ usuariosSchema.pre('save', async function (next) {
     this.password = hash;
     next();
 });
+usuariosSchema.post('save', function (error, doc, next) {
+    if (error.name === 'MongoServerError' && error.code === 11000) {
+        //los strings o errores dentro del next se pasan al catch en forma de error(try-catch)
+        next('Ese correo ya se ha registrado');
+    } else {
+        next('error');
+    }
+})
 module.exports = mongoose.model('Usuarios', usuariosSchema)
