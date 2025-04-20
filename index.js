@@ -10,6 +10,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo'); //(session);
 const bodyParser = require('body-parser');
 const flash = require('connect-flash');
+const passport = require('./config/passport');
 
 require('dotenv').config({ path: 'variables.env' });
 
@@ -42,7 +43,9 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24, // 1 día de duración
     },
 }));
-
+//inicializar passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 //alertas y flash messages
 app.use(flash());
