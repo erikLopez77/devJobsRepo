@@ -17,13 +17,13 @@ passport.use(new LocalStrategy({
         message: 'Password incorrecto'
     })
 
-    //usuario existe y el password es correcto
+    //usuario existe y el password es correcto se adjunta al usuario en req.user
     return done(null, usuario);
 
 }));
-
+//se gurda usuario._id en la session 
 passport.serializeUser((usuario, done) => done(null, usuario._id));
-
+//se toma id de la ssesion y se busca en la db a usuario para asiganrlo en req.user
 passport.deserializeUser(async (id, done) => {
     const usuario = await Usuarios.findById(id).exec();
     return done(null, usuario);
