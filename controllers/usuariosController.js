@@ -1,6 +1,5 @@
 const { check, validationResult } = require('express-validator');
 const mongoose = require('mongoose');
-const { cerrarSesion } = require('./authController');
 const Usuarios = mongoose.model('Usuarios');
 
 exports.formCrearCuenta = (req, res) => {

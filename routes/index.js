@@ -13,6 +13,7 @@ module.exports = () => {
         vacantesController.formularioNuevaVacante);
     router.post('/vacantes/nueva',
         authController.verificarUsuario,
+        vacantesController.validarVacante,
         vacantesController.agregarVacante);
 
     //mostrar vacante singular
@@ -24,6 +25,7 @@ module.exports = () => {
         vacantesController.formEditarVacante);
     router.post('/vacantes/editar/:url',
         authController.verificarUsuario,
+        vacantesController.validarVacante,
         vacantesController.editarVacante);
 
     //crear cuentas
