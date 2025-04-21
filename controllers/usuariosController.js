@@ -59,7 +59,7 @@ exports.formEditarPerfil = (req, res) => {
         usuario: req.user.toObject(),
         cerrarSesion: true,
         nombre: req.user.nombre
-    })
+    });
 }
 //guardar cambios editar perfil
 exports.editarPerfil = async (req, res) => {
@@ -73,4 +73,30 @@ exports.editarPerfil = async (req, res) => {
     req.flash('correcto', 'Cambios guardados correctamente')
 
     res.redirect('/administracion');
+}
+//sanitizar y validar el formulario de usuarios
+exports.validarPerfil = async (req, res) => {
+    //sanitizar y validar
+    await check('nombre').notEmpty().escape().withMessage('El nombre no puede ir vacío').run(req);
+    await check('email').notEmpty().escape().withMessage('El correo no puede ir vacío').run(req);
+    if (req.body.password) {
+        await check('password').escape().run(req);
+    }
+    const errores = validationResult(req);
+    if (errores) {
+        // Extraer SOLO los mensajes de error
+        const mensajesError = errores.array().map(error => error.msg);
+
+        // Guardar cada mensaje individualmente en flash
+        mensajesError.forEach(mensaje => {
+            req.flash('error', mensaje);
+        });
+        return res.render('editar-perfil', {
+            nombrePagina: 'Edita tu perfil en devJobs',
+            usuario: req.user.toObject(),
+            cerrarSesion: true,
+            nombre: req.user.nombre,
+            mensajes: req.flash()
+        });
+    }
 }
