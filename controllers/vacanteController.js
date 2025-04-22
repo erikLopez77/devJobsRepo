@@ -90,3 +90,7 @@ exports.validarVacante = async (req, res) => {
         });
     }
 }
+exports.eliminarVacante = async (req, res) => {
+    const { id } = req.params;
+
+}
