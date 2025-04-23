@@ -1,5 +1,5 @@
-import axios from 'axios';
-import Swal from 'sweetalert2';
+const axios = require('axios');
+const Swal = require('sweetalert2');
 
 document.addEventListener('DOMContentLoaded', () => {
     const skills = document.querySelector('.lista-conocimientos');
@@ -65,9 +65,35 @@ const limpiarAlertas = () => {
 
 //Eliminar vacantes
 const accionesListado = e => {
+    console.log('+++1');
     e.preventDefault();
     if (e.target.dataset.eliminar) {
         //eliminar por axios
+        const url = `${location.origin}/vacantes/eliminar/${e.target.dataset.eliminar}`;
+        console.log('+++');
+        return;
+        Swal.fire({
+            title: '¿Confirmar eliminación?',
+            text: 'Una vex eliminado, no se puede recuperar',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Si, eliminar',
+            cancelButtonText: 'No, cancelar'
+        }).then((result) => {
+            if (result.value) {
+                //enviar la peticion con axios
+                const url = `${location.origin}/vacantes/eliminar/${e.target.dataset.eliminar}`;
+
+                //axios p/ eliminar el registro
+                axios.delete(url, { params: { url } })
+                    .then(function (respuesta) {
+                        if (respuesta.status === 200) {
+                            Swal.fire('Eliminado', respuesta.data, 'success');
+                        }
+                        //todo eliminar del dom
+                    })
+            }
+        })
 
     } else {
         window.location.href = e.target.href;
