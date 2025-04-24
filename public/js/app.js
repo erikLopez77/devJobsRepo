@@ -65,16 +65,13 @@ const limpiarAlertas = () => {
 
 //Eliminar vacantes
 const accionesListado = e => {
-    console.log('+++1');
+
     e.preventDefault();
     if (e.target.dataset.eliminar) {
         //eliminar por axios
-        const url = `${location.origin}/vacantes/eliminar/${e.target.dataset.eliminar}`;
-        console.log('+++');
-        return;
         Swal.fire({
             title: '¿Confirmar eliminación?',
-            text: 'Una vex eliminado, no se puede recuperar',
+            text: 'Una vez eliminado, no se puede recuperar',
             type: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Si, eliminar',
