@@ -6,9 +6,18 @@ const shortid = require('shortid');
 
 exports.subirImagen = (req, res, next) => {
     upload(req, res, function (error) {
-        if (error instanceof multer.MulterError) {
+        if (error) {
+            if (error instanceof multer.MulterError) {
+                return next();
+            } else {
+                req.flash('error', error.message);
+            }
+            res.redirect('/administracion');
+            return;
+        } else {
             return next();
         }
+
     });
     next();
 }
@@ -27,7 +36,7 @@ const configuracionMulter = {
             // el cb se ejecuta como true o false, true si se acepta img
             cb(null, true);
         } else {
-            cb(null, false);
+            cb(new Error('Formato no válido'), false);
         }
     }, limits: {
         fileSize: 100000
