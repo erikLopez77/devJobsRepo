@@ -72,7 +72,7 @@ const accionesListado = e => {
         Swal.fire({
             title: '¿Confirmar eliminación?',
             text: 'Una vez eliminado, no se puede recuperar',
-            type: 'warning',
+            type: 'warning', //rev
             showCancelButton: true,
             confirmButtonText: 'Si, eliminar',
             cancelButtonText: 'No, cancelar'
@@ -88,11 +88,20 @@ const accionesListado = e => {
                             Swal.fire('Eliminado', respuesta.data, 'success');
                         }
                         //todo eliminar del dom
+                        e.target.parentElement.parentElement.parentElement.removeChild(e.target.parentElement.parentElement);
+                        location.reload();
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Hubo un error',
+                            text: 'No se pudo eliminar'
+                        })
                     })
             }
         })
 
-    } else {
+    } else if (e.target.tagName === 'A') {
         window.location.href = e.target.href;
     }
 }

@@ -1,7 +1,39 @@
 const { check, validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const Usuarios = mongoose.model('Usuarios');
+const multer = require('multer');
+const shortid = require('shortid');
 
+exports.subirImagen = (req, res, next) => {
+    upload(req, res, function (error) {
+        if (error instanceof multer.MulterError) {
+            return next();
+        }
+    });
+    next();
+}
+//opciones de multer
+const configuracionMulter = {
+    storage: fileStorage = multer.diskStorage({
+        destination: (req, file, cb) => {
+            cb(null, __dirname + '../../public/uploads/perfiles');
+        },
+        filename: (req, file, cb) => {
+            const extension = file.mimetype.split('/')[1];
+            cb(null, `${shortid.generate()}.${extension}`)
+        }
+    }), fileFilter(req, file, cb) {
+        if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
+            // el cb se ejecuta como true o false, true si se acepta img
+            cb(null, true);
+        } else {
+            cb(null, false);
+        }
+    }, limits: {
+        fileSize: 100000
+    }
+}
+const upload = multer(configuracionMulter).single('imagen');
 exports.formCrearCuenta = (req, res) => {
     res.render('crear-cuenta', {
         nombrePagina: 'Crea tu cuenta en devJobs',
@@ -69,6 +101,11 @@ exports.editarPerfil = async (req, res) => {
     if (req.body.password) {
         usuario.password = req.body.password;
     }
+
+    if (req.file) {
+        usuario.imagen = req.file.filename
+    }
+
     await usuario.save();
     req.flash('correcto', 'Cambios guardados correctamente')
 

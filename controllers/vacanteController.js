@@ -63,7 +63,7 @@ exports.editarVacante = async (req, res) => {
     res.redirect(`/vacantes/${vacante.url}`);
 }
 //validar y sanitizar los campos de las nuevas vacantes
-exports.validarVacante = async (req, res) => {
+exports.validarVacante = async (req, res, next) => {
     //sanitizar los campos y validar
     await check('titulo').notEmpty().escape().withMessage('Agrega un titulo a la vacante').run(req);
     await check('empresa').notEmpty().escape().withMessage('Agrega una empresa').run(req);
@@ -73,7 +73,7 @@ exports.validarVacante = async (req, res) => {
     await check('skills').notEmpty().escape().withMessage('Agrega al menos una habilidad').run(req);
 
     const errores = validationResult(req);
-    if (errores) {
+    if (!errores.isEmpty()) {
         // Extraer SOLO los mensajes de error
         const mensajesError = errores.array().map(error => error.msg);
 
@@ -89,10 +89,24 @@ exports.validarVacante = async (req, res) => {
             mensajes: req.flash()
         });
     }
+    next();
 }
 exports.eliminarVacante = async (req, res) => {
     const { id } = req.params;
-    res.status(200).send('Vacante eliminada correctamente');
-    //res.status(200).send('Vacante eliminada correctamente');
+    const vacante = await Vacante.findById(id);
+    if (verificarAutor(vacante, req.user)) {
+        //si es el usuario
+        await Vacante.findByIdAndDelete(id);
+        res.status(200).send('Vacante eliminada correctamente');
+    } else {
+        // no permitido
+        res.status(403).send('Error')
+    }
 
+}
+const verificarAutor = (vacante = {}, usuario = {}) => {
+    if (!vacante.autor.equals(usuario._id)) {
+        return false;
+    }
+    return true;
 }
