@@ -102,7 +102,8 @@ exports.formEditarPerfil = (req, res) => {
         nombrePagina: 'Edita tu perfil en devJobs',
         usuario: req.user.toObject(),
         cerrarSesion: true,
-        nombre: req.user.nombre
+        nombre: req.user.nombre,
+        imagen: req.user.imagen
     });
 }
 //guardar cambios editar perfil
@@ -145,7 +146,9 @@ exports.validarPerfil = async (req, res) => {
             usuario: req.user.toObject(),
             cerrarSesion: true,
             nombre: req.user.nombre,
+            imagen: req.user.imagen,
             mensajes: req.flash()
         });
     }
+    next();
 }
