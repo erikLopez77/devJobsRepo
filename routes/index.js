@@ -65,5 +65,10 @@ module.exports = () => {
         vacantesController.subirCV,
         vacantesController.contactar
     );
+    //muestra los candidatos
+    router.get('/candidatos/:id',
+        authController.verificarUsuario,
+        vacantesController.mostrarCandidatos
+    );
     return router;
 }

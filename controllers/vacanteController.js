@@ -4,6 +4,8 @@ const { check, validationResult } = require('express-validator');
 
 const multer = require('multer');
 const shortId = require('shortid');
+const { findById } = require('../models/Usuarios');
+const { cerrarSesion } = require('./authController');
 
 exports.formularioNuevaVacante = (req, res) => {
     res.render('nueva-vacante', {
@@ -175,4 +177,21 @@ exports.contactar =async (req,res,next) =>{
 
     req.flash('correcto', 'Se envió tu curriculum correctamente');
     res.redirect('/');
+}
+
+exports.mostrarCandidatos = async (req, res)=>{
+    const vacante= await Vacante.findById(req.params.id).lean();
+
+    if(vacante.autor != req.user._id.toString()){
+        return next();
+    }
+    if(!vacante) return next();
+
+    res.render('candidatos',{
+        nombrePagina: `Candidatos vacante - ${vacante.titulo}`,
+        cerrarSesion: true,
+        nombre: req.user.nombre,
+        imagen: req.user.imagen,
+        candidatos: vacante.candidatos
+    })
 }

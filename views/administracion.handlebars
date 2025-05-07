@@ -13,6 +13,9 @@
             <div class="caja">
                 <h3>{{empresa}}</h3>
                 <p class="puesto">{{titulo}}</p>
+                <p class="candidatos">
+                    {{candidatos.length}} Candidato(s)
+                </p>
             </div>
             <div class="centrar-vertical caja">
                 <a href="/candidatos/{{_id}}" class="btn btn-amarillo">Candidatos</a>
@@ -21,7 +24,7 @@
                 <a href="/vacantes/editar/{{url}}" class="btn btn-verde">Editar</a>
             </div>
             <div class="centrar-vertical caja">
-                <a href="#" class="btn btn-rojo" data-eliminar={{_id}}>Eliminar</a>
+                <a href="/candidatos/:id" class="btn btn-rojo" data-eliminar={{_id}}>Eliminar</a>
             </div>
         </div>
         {{/each}}
