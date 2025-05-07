@@ -143,10 +143,10 @@ const configuracionMulter = {
         },
         filename: (req, file, cb) => {
             const extension = file.mimetype.split('/')[1];
-            cb(null, `${shortid.generate()}.${extension}`)
+            cb(null, `${shortId.generate()}.${extension}`)
         }
     }), fileFilter(req, file, cb) {
-        if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
+        if (file.mimetype === 'application/pdf') {
             // el cb se ejecuta como true o false, true si se acepta img
             cb(null, true);
         } else {
@@ -155,3 +155,24 @@ const configuracionMulter = {
     }
 }
 const upload = multer(configuracionMulter).single('cv');
+//almacenar candidatos en la db
+exports.contactar =async (req,res,next) =>{
+    const vacante= await Vacante.findOne({url:req.params.url});
+
+    //sino existe la vacante
+    if(!vacante) return next();
+    console.log(req.file)
+
+    const nuevoCandidato = {
+        nombre: req.body.nombre,
+        email:req.body.email,
+        cv:req.file.filename
+    }
+
+    //almacenar la vacante
+    vacante.candidatos.push(nuevoCandidato);
+    await vacante.save();
+
+    req.flash('correcto', 'Se envió tu curriculum correctamente');
+    res.redirect('/');
+}
