@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Vacante = mongoose.model('Vacante');
 const Usuarios = mongoose.model('Usuarios');
 const crypto = require('crypto');
+const enviarEmail =require('../handlers/email');
 
 exports.autenticarUsuario = passport.authenticate('local', {
     successRedirect: '/administracion',
@@ -63,8 +64,35 @@ exports.enviarToken = async (req,res) =>{
     await usuario.save();
     const resetUrl =`http://${req.headers.host}/reestablecer-password/${usuario.token}`;
 
-    console.log(resetUrl);
-    // TODO
+    //console.log(resetUrl);
+    // enviar notificacion por email
+    await enviarEmail.enviar({
+        usuario,
+        subject: 'Password reset',
+        resetUrl,
+        archivo: 'reset'
+    });
+
+    // Todo correcto
     req.flash('correcto','Revisa tu email para las indicaciones');
     res.redirect('/iniciar-sesion')
+}
+//valida si el token es valido y el usuario existe
+exports.reestablecerPassword = async (req,res)=>{
+    const usuario = await Usuarios.findOne({
+        token:req.params.token,
+        expira: {
+            $gt: Date.now()
+        }
+    });
+
+    if(!usuario){
+        req.flash('error','El formulario ya no es válido. intenta de nuevo');
+        return res.redirect('/reestablecer-password');
+    }
+
+    //todo bien, mostrar el formulario
+    res.render('nuevo-password',{
+        nombrePagina:'Nuevo password'
+    });
 }
