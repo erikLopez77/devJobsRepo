@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Vacante = mongoose.model('Vacante');
 const Usuarios = mongoose.model('Usuarios');
 const crypto = require('crypto');
-const enviarEmail =require('../handlers/email');
+const enviarEmail = require('../handlers/email');
 
 exports.autenticarUsuario = passport.authenticate('local', {
     successRedirect: '/administracion',
@@ -42,27 +42,27 @@ exports.cerrarSesion = (req, res) => {
     return res.redirect('/iniciar-sesion');
 }
 //formulario para reiniciar password
-exports.formReestablecerPassword =(req,res)=>{
-    res.render('reestablecer-password',{
-        nombrePagina:'Reestablece tu password',
-        tagline:'Si ya tienes una cuenta pero olvidaste tu password, coloca tu email '
+exports.formReestablecerPassword = (req, res) => {
+    res.render('reestablecer-password', {
+        nombrePagina: 'Reestablece tu password',
+        tagline: 'Si ya tienes una cuenta pero olvidaste tu password, coloca tu email '
     })
 }
 //genera tpken en la tabla de usuario
-exports.enviarToken = async (req,res) =>{
-    const usuario = await Usuarios.findOne({email: req.body.email});
-    if(!usuario){
-        req.flash('error','No existe esa cuenta');
+exports.enviarToken = async (req, res) => {
+    const usuario = await Usuarios.findOne({ email: req.body.email });
+    if (!usuario) {
+        req.flash('error', 'No existe esa cuenta');
         return res.redirect('/iniciar-sesion');
 
     }
     //el usuario existe, generar token
     usuario.token = crypto.randomBytes(20).toString('hex');
-    usuario.expira=Date.now()+3600000;
+    usuario.expira = Date.now() + 3600000;
 
     //guardar usuario
     await usuario.save();
-    const resetUrl =`http://${req.headers.host}/reestablecer-password/${usuario.token}`;
+    const resetUrl = `http://${req.headers.host}/reestablecer-password/${usuario.token}`;
 
     //console.log(resetUrl);
     // enviar notificacion por email
@@ -74,25 +74,49 @@ exports.enviarToken = async (req,res) =>{
     });
 
     // Todo correcto
-    req.flash('correcto','Revisa tu email para las indicaciones');
+    req.flash('correcto', 'Revisa tu email para las indicaciones');
     res.redirect('/iniciar-sesion')
 }
 //valida si el token es valido y el usuario existe
-exports.reestablecerPassword = async (req,res)=>{
+exports.reestablecerPassword = async (req, res) => {
     const usuario = await Usuarios.findOne({
-        token:req.params.token,
+        token: req.params.token,
         expira: {
             $gt: Date.now()
         }
     });
 
-    if(!usuario){
-        req.flash('error','El formulario ya no es válido. intenta de nuevo');
+    if (!usuario) {
+        req.flash('error', 'El formulario ya no es válido. intenta de nuevo');
         return res.redirect('/reestablecer-password');
     }
 
     //todo bien, mostrar el formulario
-    res.render('nuevo-password',{
-        nombrePagina:'Nuevo password'
+    res.render('nuevo-password', {
+        nombrePagina: 'Nuevo password'
     });
+}
+// almacena el nuevo password en la db
+exports.guardarPassword = async (req, res) => {
+    const usuario = await Usuarios.findOne({
+        token: req.params.token,
+        expira: {
+            $gt: Date.now()
+        }
+    });
+    // no existe o el token es invalido
+    if (!usuario) {
+        req.flash('error', 'El formulario ya no es válido. intenta de nuevo');
+        return res.redirect('/reestablecer-password');
+    }
+    //guardar en la db
+    usuario.password = req.body.password;
+    usuario.token = undefined;
+    usuario.expira = undefined;
+
+    //agregar y eliminar valores del objeto
+    await usuario.save();
+
+    req.flash('correcto', 'Password modificado correctamente');
+    res.redirect('/iniciar-sesion');
 }
