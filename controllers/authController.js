@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Vacante = mongoose.model('Vacante');
 const Usuarios = mongoose.model('Usuarios');
 const crypto = require('crypto');
-const enviarEmail = require('../handlers/email');
+const enviar = require('../handlers/email');
 
 exports.autenticarUsuario = passport.authenticate('local', {
     successRedirect: '/administracion',
@@ -63,10 +63,10 @@ exports.enviarToken = async (req, res) => {
     //guardar usuario
     await usuario.save();
     const resetUrl = `http://${req.headers.host}/reestablecer-password/${usuario.token}`;
-
+    console.log(resetUrl)
     //console.log(resetUrl);
     // enviar notificacion por email
-    await enviarEmail.enviar({
+    await enviar.enviar({
         usuario,
         subject: 'Password reset',
         resetUrl,
@@ -98,25 +98,31 @@ exports.reestablecerPassword = async (req, res) => {
 }
 // almacena el nuevo password en la db
 exports.guardarPassword = async (req, res) => {
-    const usuario = await Usuarios.findOne({
-        token: req.params.token,
-        expira: {
-            $gt: Date.now()
+    try {
+        const usuario = await Usuarios.findOne({
+            token: req.params.token,
+            expira: {
+                $gt: Date.now()
+            }
+        });
+        // no existe o el token es invalido
+        if (!usuario) {
+            req.flash('error', 'El formulario ya no es válido. intenta de nuevo');
+            return res.redirect('/reestablecer-password');
         }
-    });
-    // no existe o el token es invalido
-    if (!usuario) {
-        req.flash('error', 'El formulario ya no es válido. intenta de nuevo');
-        return res.redirect('/reestablecer-password');
+        //guardar en la db
+        usuario.password = req.body.password;
+        usuario.token = undefined;
+        usuario.expira = undefined;
+
+        //agregar y eliminar valores del objeto
+        await usuario.save();
+
+        req.flash('correcto', 'Password modificado correctamente');
+        res.redirect('/iniciar-sesion');
+    } catch (error) {
+        console.error('Error al enviar correo:', error);
+        req.flash('error', 'Ocurrió un error al enviar el correo');
+        res.redirect('/iniciar-sesion');
     }
-    //guardar en la db
-    usuario.password = req.body.password;
-    usuario.token = undefined;
-    usuario.expira = undefined;
-
-    //agregar y eliminar valores del objeto
-    await usuario.save();
-
-    req.flash('correcto', 'Password modificado correctamente');
-    res.redirect('/iniciar-sesion');
 }
