@@ -158,17 +158,17 @@ const configuracionMulter = {
 }
 const upload = multer(configuracionMulter).single('cv');
 //almacenar candidatos en la db
-exports.contactar =async (req,res,next) =>{
-    const vacante= await Vacante.findOne({url:req.params.url});
+exports.contactar = async (req, res, next) => {
+    const vacante = await Vacante.findOne({ url: req.params.url });
 
     //sino existe la vacante
-    if(!vacante) return next();
+    if (!vacante) return next();
     console.log(req.file)
 
     const nuevoCandidato = {
         nombre: req.body.nombre,
-        email:req.body.email,
-        cv:req.file.filename
+        email: req.body.email,
+        cv: req.file.filename
     }
 
     //almacenar la vacante
@@ -179,19 +179,33 @@ exports.contactar =async (req,res,next) =>{
     res.redirect('/');
 }
 
-exports.mostrarCandidatos = async (req, res)=>{
-    const vacante= await Vacante.findById(req.params.id).lean();
+exports.mostrarCandidatos = async (req, res) => {
+    const vacante = await Vacante.findById(req.params.id).lean();
 
-    if(vacante.autor != req.user._id.toString()){
+    if (vacante.autor != req.user._id.toString()) {
         return next();
     }
-    if(!vacante) return next();
+    if (!vacante) return next();
 
-    res.render('candidatos',{
+    res.render('candidatos', {
         nombrePagina: `Candidatos vacante - ${vacante.titulo}`,
         cerrarSesion: true,
         nombre: req.user.nombre,
         imagen: req.user.imagen,
         candidatos: vacante.candidatos
     })
+}
+exports.buscarVacantes = async (req, res) => {
+    const vacantes = await Vacante.find({
+        $text: {
+            $search: req.body.q
+        }
+    });
+
+    //mostrar
+    res.render('home', {
+        nombrePagina: `Resultados para la búsqueda : ${req.body.q}`,
+        barra: true,
+        vacantes
+    });
 }

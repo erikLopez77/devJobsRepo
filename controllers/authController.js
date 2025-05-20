@@ -66,16 +66,20 @@ exports.enviarToken = async (req, res) => {
     console.log(resetUrl)
     //console.log(resetUrl);
     // enviar notificacion por email
-    await enviar.enviar({
-        usuario,
-        subject: 'Password reset',
-        resetUrl,
-        archivo: 'reset'
-    });
+    try {
+        await enviar.enviar({
+            usuario,
+            subject: 'Password reset',
+            resetUrl,
+            archivo: 'reset'
+        });
+        // Todo correcto
+        req.flash('correcto', 'Revisa tu email para las indicaciones');
+        res.redirect('/iniciar-sesion')
+    } catch (error) {
+        console.log(error)
+    }
 
-    // Todo correcto
-    req.flash('correcto', 'Revisa tu email para las indicaciones');
-    res.redirect('/iniciar-sesion')
 }
 //valida si el token es valido y el usuario existe
 exports.reestablecerPassword = async (req, res) => {

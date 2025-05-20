@@ -45,4 +45,8 @@ vacantesSchema.pre('save', function (next) {
     this.url = `${url}-${shortid.generate()}`
     next();
 });
+
+//indice
+vacantesSchema.index({ titulo: 'text' });
+
 mongoose.exports = mongoose.model('Vacante', vacantesSchema);

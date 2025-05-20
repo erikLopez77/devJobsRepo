@@ -59,9 +59,9 @@ app.use((req, res, next) => {
 
 app.use('/', router);
 //404 pagina no existente
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
     next(createError(404, 'No encontrado'));
-});
+}); */
 //administracion de los errores
 app.use((error, req, res) => {
     res.locals.mensaje = error.message;
@@ -70,4 +70,6 @@ app.use((error, req, res) => {
     res.status(status);
     res.render('error');
 });
-app.listen(process.env.PUERTO);
+app.listen(process.env.PUERTO, () => {
+    console.log(`El servidor esta funcionando en el puerto `, process.env.PUERTO);
+});
