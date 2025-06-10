@@ -4,8 +4,6 @@ const { check, validationResult } = require('express-validator');
 
 const multer = require('multer');
 const shortId = require('shortid');
-const { findById } = require('../models/Usuarios');
-const { cerrarSesion } = require('./authController');
 
 exports.formularioNuevaVacante = (req, res) => {
     res.render('nueva-vacante', {
@@ -200,7 +198,7 @@ exports.buscarVacantes = async (req, res) => {
         $text: {
             $search: req.body.q
         }
-    });
+    }).lean();
 
     //mostrar
     res.render('home', {
